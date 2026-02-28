@@ -5,7 +5,6 @@ import { Upload, FileSpreadsheet, X, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cn, formatSize } from "@/lib/utils";
-import { useUploadExcel } from "@/hooks/use-upload-excel";
 import { toast } from "sonner";
 
 interface DroppedFile {
@@ -13,12 +12,23 @@ interface DroppedFile {
   id: string;
 }
 
-export function DragAndDrop() {
+interface DragAndDropProps {
+  mutate: (
+    file: File,
+    options: { onSuccess: () => void; onError: () => void },
+  ) => void;
+  isPending: boolean;
+  reset: () => void;
+}
+
+export function DragAndDrop({ mutate, isPending, reset }: DragAndDropProps) {
   const [isDragging, setIsDragging] = useState(false);
   const [file, setFile] = useState<DroppedFile | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const { mutate, isPending, reset } = useUploadExcel();
+  const clearInput = useCallback(() => {
+    if (inputRef.current) inputRef.current.value = "";
+  }, []);
 
   const setDroppedFile = useCallback(
     (newFile: File) => {
@@ -55,10 +65,6 @@ export function DragAndDrop() {
     },
     [setDroppedFile],
   );
-
-  const clearInput = useCallback(() => {
-    if (inputRef.current) inputRef.current.value = "";
-  }, []);
 
   const removeFile = useCallback(() => {
     reset();
@@ -137,29 +143,27 @@ export function DragAndDrop() {
 
       {file && (
         <div className="space-y-3">
-          <ul className="space-y-2">
-            <li className="flex items-center gap-3 bg-muted/50 border border-border rounded-lg px-4 py-3">
-              <FileSpreadsheet className="w-5 h-5 text-primary shrink-0" />
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium truncate">{file.file.name}</p>
-                <p className="text-xs text-muted-foreground">
-                  {formatSize(file.file.size)}
-                </p>
-              </div>
-              <Button
-                variant="ghost"
-                size="icon"
-                disabled={isPending}
-                className="h-7 w-7 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  removeFile();
-                }}
-              >
-                <X className="w-4 h-4" />
-              </Button>
-            </li>
-          </ul>
+          <li className="flex items-center gap-3 bg-muted/50 border border-border rounded-lg px-4 py-3 list-none">
+            <FileSpreadsheet className="w-5 h-5 text-primary shrink-0" />
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium truncate">{file.file.name}</p>
+              <p className="text-xs text-muted-foreground">
+                {formatSize(file.file.size)}
+              </p>
+            </div>
+            <Button
+              variant="ghost"
+              size="icon"
+              disabled={isPending}
+              className="h-7 w-7 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+              onClick={(e) => {
+                e.stopPropagation();
+                removeFile();
+              }}
+            >
+              <X className="w-4 h-4" />
+            </Button>
+          </li>
 
           <Button
             className="w-full"
