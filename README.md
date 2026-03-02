@@ -1,3 +1,7 @@
+# For en .env file:
+DATABASE_URL="postgresql://postgres:admin@localhost:5432/postgres?schema=public"
+
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
