@@ -12,6 +12,8 @@ export interface UploadExcelResponse {
 	errors: Array<{ index: number; reason: string }>;
 	processed?: boolean;
 	timeDate?: string;
+	reportTimeDate?: string;
+	reportHeader?: string;
 }
 
 export async function uploadExcel(
