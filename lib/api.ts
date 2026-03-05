@@ -67,7 +67,20 @@ export async function uploadExcel(
 		size: file.size,
 		data: base64,
 		timeDate,
+		normalization: {
+			address: "lowercase",
+			city: "uppercase_trim_before_slash",
+			state: "lowercase",
+			country_region: "uppercase",
+		},
 	};
+
+	console.log("Applying location normalization rules before backend import:", {
+		address: "lowercase",
+		city: "uppercase_trim_before_slash",
+		state: "lowercase",
+		country_region: "uppercase",
+	});
 
 	// Log a preview of the JSON payload (don't log full base64 to avoid huge console output)
 	console.log("Upload JSON preview:", {
