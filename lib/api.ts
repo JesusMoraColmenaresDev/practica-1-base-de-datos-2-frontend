@@ -7,9 +7,17 @@ export interface ExcelRow {
 export interface UploadExcelResponse {
 	columns: string[];
 	rows: ExcelRow[];
+	count: number;
+	inserted: number;
+	errors: Array<{ index: number; reason: string }>;
+	processed?: boolean;
+	timeDate?: string;
 }
 
-export async function uploadExcel(file: File): Promise<UploadExcelResponse> {
+export async function uploadExcel(
+	file: File,
+	timeDate?: string,
+): Promise<UploadExcelResponse> {
 	const formData = new FormData();
 	formData.append("file", file);
 	console.log("Uploading file:", file.name, file.size);
@@ -56,6 +64,7 @@ export async function uploadExcel(file: File): Promise<UploadExcelResponse> {
 		type: file.type,
 		size: file.size,
 		data: base64,
+		timeDate,
 	};
 
 	// Log a preview of the JSON payload (don't log full base64 to avoid huge console output)
@@ -66,7 +75,10 @@ export async function uploadExcel(file: File): Promise<UploadExcelResponse> {
 		dataPreview: jsonPayload.data.slice(0, 200),
 	});
 
-	const { data } = await axios.post("http://localhost:4000/upload-json", jsonPayload);
+	const { data } = await axios.post(
+		"http://localhost:4000/upload-json",
+		jsonPayload,
+	);
 
 	return data;
 }
